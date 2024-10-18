@@ -12,10 +12,13 @@ class DashboardPage{
         await this.page.goto("/web/index.php/dashboard/index");
     };
 
-    async isDashboardVisible(){
-        const welcomeText= await this.page.locator('.oxd-topbar-header-breadcrumb h6').textContent();
+    async clickonApplyLeaveOnDashboard(){
+        await this.page.getByRole('button',{name:'Apply Leave'}).click();
+    }
 
-        return welcomeText;
+    async isTitleVisible(){
+        const pageTitle= await this.page.locator('.oxd-topbar-header-breadcrumb h6').textContent();
+        return pageTitle;
     }
 
    
