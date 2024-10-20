@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import { test } from "../fixtures/Testoptions";
-import { beforeEach } from "node:test";
+
 
 test.beforeEach(async ({ pageManager }) => {
   await pageManager.onDashboardPage().navigateTo();
@@ -10,14 +10,17 @@ test("Verify that you are successfully able to login to dashboard", async ({
   pageManager,
 }) => {
   await pageManager.onDashboardPage().navigateTo();
-  const welcomeText = await pageManager.onDashboardPage().isTitleVisible();
+  const welcomeText = await pageManager.onDashboardPage().isDashboardTitleVisible();
   await expect(welcomeText).toEqual("Dashboard");
 });
 
-test("Verify that you are able to apply leave ", async ({ pageManager }) => {
+test.only("Verify that you are able to apply leave ", async ({ pageManager }) => {
   await pageManager.onDashboardPage().navigateTo();
-  const welcomeText = await pageManager.onDashboardPage().isTitleVisible();
+  const welcomeText = await pageManager.onDashboardPage().isDashboardTitleVisible();
   await expect(welcomeText).toEqual("Dashboard");
+
   await pageManager.onDashboardPage().clickonApplyLeaveOnDashboard();
-  expect(await pageManager.onDashboardPage().isTitleVisible()).toEqual("Leave")
+  expect( await pageManager.onDashboardPage().isDashboardTitleVisible()).toEqual('Leave');
+  await pageManager.onLeavePage().submitLeaveRequest();
+  
 });

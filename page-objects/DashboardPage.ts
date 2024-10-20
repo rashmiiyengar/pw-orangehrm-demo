@@ -16,7 +16,7 @@ class DashboardPage{
         await this.page.getByRole('button',{name:'Apply Leave'}).click();
     }
 
-    async isTitleVisible(){
+    async isDashboardTitleVisible(){
         const pageTitle= await this.page.locator('.oxd-topbar-header-breadcrumb h6').textContent();
         return pageTitle;
     }

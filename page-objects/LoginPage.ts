@@ -11,7 +11,7 @@ class LoginPage {
   }
 
   async navigateTo() {
-    await this.page.goto("/");
+    await this.page.goto("/",{ timeout: 60000 });
   }
 
   async login(userName: string, password: string) {
