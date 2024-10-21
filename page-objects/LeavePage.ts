@@ -1,4 +1,5 @@
 import { Page, Locator, expect } from "@playwright/test";
+import { log } from "console";
 
 class LeavePage {
   private readonly page: Page;
@@ -54,10 +55,8 @@ class LeavePage {
       .first()
       .waitFor({ state: "visible" });
     const dateToAssert = await this.selectDateInCalender(endDate);
-    //await expect(ToDate).toHaveValue(dateToAssert);
   }
 
-  // Method to select a date based on an offset from today
   private async selectDateInCalender(numberOfdaysFromToday: number) {
     let date = new Date();
     date.setDate(date.getDate() + numberOfdaysFromToday);
@@ -111,33 +110,15 @@ class LeavePage {
     return dateToAssert;
   }
 
-  private async selectPartialDays() {
-    const dropdownWrapper = this.page.locator("form i").nth(4);
-    await dropdownWrapper.waitFor({ state: "visible", timeout: 60000 });
-    await dropdownWrapper.click();
-
-    const dropdownOptions = this.page.locator(
-      ".oxd-select-dropdown .oxd-select-option"
-    );
-    const optionsText = await dropdownOptions.allTextContents();
-    const validOptions = optionsText.filter(
-      (option) => option != "-- Select --"
-    );
-    await expect(validOptions).toEqual([
-      "All Days",
-      "Start Day Only",
-      "End Day Only",
-      "Start and End Day",
-    ]);
-
-    await dropdownOptions.filter({ hasText: "All Days" }).first().click();
-  }
-
   private async selectDropdownOption(
     dropdownIndex: number,
     expectedOptions: string[],
     desiredOption: string
   ) {
+    if (this.page.isClosed()) {
+      throw new Error("Page has been closed");
+    }
+
     const dropdownWrapper = this.page.locator("form i").nth(dropdownIndex);
     await dropdownWrapper.waitFor({ state: "visible", timeout: 60000 });
     await dropdownWrapper.click();
@@ -150,12 +131,20 @@ class LeavePage {
     );
     await expect(validOptions).toEqual(expectedOptions);
 
-    if (validOptions.includes(desiredOption)) {
-      await dropdownOptions.filter({ hasText: desiredOption }).first().click();
+    if (desiredOption === "Specify Time") {
+       await this.specifyTimeFromandTo();
+      
     } else {
-      console.log(
-        `"${desiredOption}" option is not available in dropdown ${dropdownIndex}`
-      );
+      if (validOptions.includes(desiredOption)) {
+        await dropdownOptions
+          .filter({ hasText: desiredOption })
+          .first()
+          .click();
+      } else {
+        console.log(
+          `"${desiredOption}" option is not available in dropdown ${dropdownIndex}`
+        );
+      }
     }
   }
 
@@ -171,8 +160,13 @@ class LeavePage {
     await this.selectDropdownOption(
       5,
       ["Half Day - Morning", "Half Day - Afternoon", "Specify Time"],
-      "Half Day - Morning"
+      "Specify Time"
     );
+  }
+
+  private async specifyTimeFromandTo(){
+    await this.page.locator('div.oxd-input-group:has(.oxd-label:text-is("From")) input.oxd-input').click();
+
   }
 }
 
