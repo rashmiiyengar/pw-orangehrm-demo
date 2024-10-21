@@ -7,13 +7,16 @@ class LeavePage {
   }
 
   async submitLeaveRequest() {
-    await this.page.locator("form i").first().waitFor({ state: "visible" });
+    //await this.page.locator("form i").first().waitFor({ state: "visible" });
     await this.page.locator("form i").first().click();
 
     await this.page.getByRole("option", { name: "CAN - FMLA" }).click();
 
     await this.selectStartDate(0);
     await this.selectEndDate(4);
+
+    await this.selectPartialDay();
+    await this.selectedAllDayChild();
   }
 
   //Method to select start date
@@ -101,10 +104,75 @@ class LeavePage {
     console.log(`Trying to select date: ${expectedDate}`);
     await this.page
       .locator(".oxd-calendar-date")
-      .getByText(expectedDate).first()
+      .getByText(expectedDate)
+      .first()
       .click();
 
     return dateToAssert;
+  }
+
+  private async selectPartialDays() {
+    const dropdownWrapper = this.page.locator("form i").nth(4);
+    await dropdownWrapper.waitFor({ state: "visible", timeout: 60000 });
+    await dropdownWrapper.click();
+
+    const dropdownOptions = this.page.locator(
+      ".oxd-select-dropdown .oxd-select-option"
+    );
+    const optionsText = await dropdownOptions.allTextContents();
+    const validOptions = optionsText.filter(
+      (option) => option != "-- Select --"
+    );
+    await expect(validOptions).toEqual([
+      "All Days",
+      "Start Day Only",
+      "End Day Only",
+      "Start and End Day",
+    ]);
+
+    await dropdownOptions.filter({ hasText: "All Days" }).first().click();
+  }
+
+  private async selectDropdownOption(
+    dropdownIndex: number,
+    expectedOptions: string[],
+    desiredOption: string
+  ) {
+    const dropdownWrapper = this.page.locator("form i").nth(dropdownIndex);
+    await dropdownWrapper.waitFor({ state: "visible", timeout: 60000 });
+    await dropdownWrapper.click();
+    const dropdownOptions = this.page.locator(
+      ".oxd-select-dropdown .oxd-select-option"
+    );
+    const optionsText = await dropdownOptions.allTextContents();
+    const validOptions = optionsText.filter(
+      (option) => option != "-- Select --"
+    );
+    await expect(validOptions).toEqual(expectedOptions);
+
+    if (validOptions.includes(desiredOption)) {
+      await dropdownOptions.filter({ hasText: desiredOption }).first().click();
+    } else {
+      console.log(
+        `"${desiredOption}" option is not available in dropdown ${dropdownIndex}`
+      );
+    }
+  }
+
+  private async selectPartialDay() {
+    await this.selectDropdownOption(
+      4,
+      ["All Days", "Start Day Only", "End Day Only", "Start and End Day"],
+      "All Days"
+    );
+  }
+
+  private async selectedAllDayChild() {
+    await this.selectDropdownOption(
+      5,
+      ["Half Day - Morning", "Half Day - Afternoon", "Specify Time"],
+      "Half Day - Morning"
+    );
   }
 }
 
