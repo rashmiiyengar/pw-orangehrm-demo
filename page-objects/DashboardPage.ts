@@ -21,6 +21,9 @@ class DashboardPage{
         return pageTitle;
     }
 
+    async clickOnMyLeaveOnDashboard(){
+        await this.page.getByRole('button',{name:'My Leave'}).click();
+    }
    
 }
 

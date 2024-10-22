@@ -1,5 +1,4 @@
-import { Page, Locator, expect } from "@playwright/test";
-import { log } from "console";
+import { Page, expect } from "@playwright/test";
 
 class LeavePage {
   private readonly page: Page;

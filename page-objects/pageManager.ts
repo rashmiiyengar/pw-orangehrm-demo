@@ -1,10 +1,11 @@
 import { Page } from "@playwright/test";
 
 import LoginPage from "./LoginPage";
-import DatePickerPage from "./DatePickerPage";
 import DashboardPage from "./DashboardPage";
 import NavBarPage from "./NavBarPage";
 import LeavePage from "./LeavePage";
+import MyLeavePage from "./MyLeavePage";
+import BasePage from "./BasePage";
 
 class PageManager {
   private page: Page;
@@ -12,6 +13,8 @@ class PageManager {
   private dashboardPage: DashboardPage;
   private navBarPage: NavBarPage;
   private leavePage: LeavePage;
+  private myLeavePage:MyLeavePage;
+  private basePage:BasePage;
 
   constructor(page: Page) {
     this.page = page;
@@ -19,6 +22,8 @@ class PageManager {
     this.dashboardPage = new DashboardPage(page);
     this.navBarPage = new NavBarPage(page);
     this.leavePage = new LeavePage(page);
+    this.basePage = new BasePage(page);
+    this.myLeavePage= new MyLeavePage(page);
   }
 
   onLoginPage() {
@@ -35,6 +40,14 @@ class PageManager {
 
   onLeavePage() {
     return this.leavePage;
+  }
+
+  onMyLeavePage() {
+    return this.myLeavePage;
+  }
+
+  onBasePage() {
+    return this.basePage;
   }
 }
 
