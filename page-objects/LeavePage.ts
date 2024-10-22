@@ -18,6 +18,7 @@ class LeavePage {
 
     await this.selectPartialDay();
     await this.selectedAllDayChild();
+    await this.page.getByRole('button',{name:"Apply"});
   }
 
   //Method to select start date
@@ -132,6 +133,10 @@ class LeavePage {
     await expect(validOptions).toEqual(expectedOptions);
 
     if (desiredOption === "Specify Time") {
+      await dropdownOptions
+          .filter({ hasText: desiredOption })
+          .first()
+          .click();
        await this.specifyTimeFromandTo();
       
     } else {
