@@ -8,17 +8,29 @@ class LeavePage {
   }
 
   async submitLeaveRequest() {
-    //await this.page.locator("form i").first().waitFor({ state: "visible" });
-    await this.page.locator("form i").first().click();
-
-    await this.page.getByRole("option", { name: "CAN - FMLA" }).click();
-
-    await this.selectStartDate(0);
-    await this.selectEndDate(4);
-
+    await this.openLeaveTypeDropdown();
+    //await this.page.getByRole("option", { name: "CAN - FMLA" }).click();
+    await this.selectLeaveType("CAN - FMLA");
+    await this.selectLeaveDates(0,5)
     await this.selectPartialDay();
     await this.selectedAllDayChild();
-    await this.page.getByRole('button',{name:"Apply"});
+    await this.applyLeave();
+  }
+
+  private async openLeaveTypeDropdown() {
+    console.log("Opening leave type dropdown...");
+    await this.page.locator("form i").first().waitFor({ state: "visible" });
+    await this.page.locator("form i").first().click();
+  }
+
+  private async selectLeaveType(leaveType:string){
+    console.log(`Selecting leave type: ${leaveType}`);
+    await this.page.getByRole("option", { name: leaveType }).click();
+  }
+
+  private async selectLeaveDates(startOffset: number, endOffset: number) {
+    await this.selectStartDate(startOffset);
+    await this.selectEndDate(endOffset);
   }
 
   //Method to select start date
@@ -172,6 +184,10 @@ class LeavePage {
   private async specifyTimeFromandTo(){
     await this.page.locator('div.oxd-input-group:has(.oxd-label:text-is("From")) input.oxd-input').click();
 
+  }
+
+  private async applyLeave() {
+    await this.page.getByRole('button', { name: "Apply" }).click();
   }
 }
 
